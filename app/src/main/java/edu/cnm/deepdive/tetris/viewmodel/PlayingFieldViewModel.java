@@ -17,7 +17,6 @@ public class PlayingFieldViewModel extends ViewModel implements DefaultLifecycle
 
   private final PlayingFieldRepository playingFieldRepository;
   private final PreferencesRepository preferencesRepository;
-  private final MutableLiveData<Field> playingField;
   private final MutableLiveData<Throwable> throwable;
   private final CompositeDisposable pending;
 
@@ -27,17 +26,45 @@ public class PlayingFieldViewModel extends ViewModel implements DefaultLifecycle
       PreferencesRepository preferencesRepository) {
     this.playingFieldRepository = playingFieldRepository;
     this.preferencesRepository = preferencesRepository;
-    playingField = new MutableLiveData<>();
     throwable = new MutableLiveData<>();
     pending = new CompositeDisposable();
   }
 
   public LiveData<Field> getPlayingField() {
-    return playingField;
+    return playingFieldRepository.getPlayingField();
   }
 
   public LiveData<Throwable> getThrowable() {
     return throwable;
+  }
+
+  
+  public void create() {
+    // TODO: 10/6/23 Invoke create in repository, with settings from settings repository. 
+  }
+  
+  public void start() {
+// TODO: 10/6/23 Invoke start in repository. 
+  }
+
+  public void moveLeft() {
+// TODO: 10/6/23 Invoke moveLeft in repository; 
+  }
+
+  public void moveRight() {
+// TODO: 10/6/23 Invoke moveRight in repository. 
+  }
+
+  public void rotateLeft() {
+// TODO: 10/6/23 Invoke rotateLeft in repository. 
+  }
+
+  public void rotateRight() {
+// TODO: 10/6/23 Invoke rotateRight in repository. 
+  }
+
+  public void drop() {
+// TODO: 10/6/23 Invoke drop in repository.
   }
 
   @Override
