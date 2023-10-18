@@ -16,6 +16,7 @@ import edu.cnm.deepdive.tetris.model.Dealer;
 import edu.cnm.deepdive.tetris.model.Field;
 import edu.cnm.deepdive.tetris.service.PlayingFieldRepository;
 import edu.cnm.deepdive.tetris.service.PreferencesRepository;
+import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.Consumer;
@@ -25,9 +26,9 @@ import org.jetbrains.annotations.NotNull;
 @HiltViewModel
 public class PlayingFieldViewModel extends ViewModel implements DefaultLifecycleObserver {
 
-
   private final PlayingFieldRepository playingFieldRepository;
   private final PreferencesRepository preferencesRepository;
+  private final MutableLiveData<Boolean> moveSuccess;
   private final MutableLiveData<Throwable> throwable;
   private final CompositeDisposable pending;
   private final String playingFieldWidthKey;
@@ -39,12 +40,12 @@ public class PlayingFieldViewModel extends ViewModel implements DefaultLifecycle
       PreferencesRepository preferencesRepository) {
     this.playingFieldRepository = playingFieldRepository;
     this.preferencesRepository = preferencesRepository;
+    moveSuccess = new MutableLiveData<>();
     throwable = new MutableLiveData<>();
     pending = new CompositeDisposable();
     Resources resources = context.getResources();
     playingFieldWidthDefault = resources.getInteger(R.integer.playing_field_width_default);
     playingFieldWidthKey = resources.getString(R.string.playing_field_width_key);
-
     create();
   }
 
@@ -54,6 +55,10 @@ public class PlayingFieldViewModel extends ViewModel implements DefaultLifecycle
 
   public LiveData<Dealer> getDealer() {
     return playingFieldRepository.getDealer();
+  }
+
+  public LiveData<Boolean> getMoveSuccess() {
+    return moveSuccess;
   }
 
   public LiveData<Throwable> getThrowable() {
@@ -70,24 +75,20 @@ public class PlayingFieldViewModel extends ViewModel implements DefaultLifecycle
     pending.add(disposable);
   }
 
-  public void start() {
-    // TODO: 10/6/23 Invoke start in repository.
-  }
-
   public void moveLeft() {
-    // TODO: 10/6/23 Invoke moveLeft in repository.
+    move(playingFieldRepository.moveLeft());
   }
 
   public void moveRight() {
-    // TODO: 10/6/23 Invoke moveRight in repository.
+    move(playingFieldRepository.moveRight());
   }
 
   public void rotateLeft() {
-    // TODO: 10/6/23 Invoke rotateLeft in repository.
+    move(playingFieldRepository.rotateLeft());
   }
 
   public void rotateRight() {
-    // TODO: 10/6/23 invoke rotateRight in repository.
+    move(playingFieldRepository.rotateRight());
   }
 
   public void drop() {
@@ -98,6 +99,14 @@ public class PlayingFieldViewModel extends ViewModel implements DefaultLifecycle
   public void onStop(@NotNull LifecycleOwner owner) {
     DefaultLifecycleObserver.super.onStop(owner);
     pending.clear();
+  }
+
+  private void move(Single<Boolean> task) {
+    Disposable disposable = task.subscribe(
+        moveSuccess::postValue,
+        throwable::postValue
+    );
+    pending.add(disposable);
   }
 
 }
