@@ -1,5 +1,6 @@
 package edu.cnm.deepdive.tetris.model.entity;
 
+
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
@@ -12,7 +13,7 @@ import java.time.Instant;
     foreignKeys = {
         @ForeignKey(
             entity = User.class,
-            parentColumns = "user_id", childColumns = "player_id", onDelete =ForeignKey.CASCADE
+            parentColumns = "user_id", childColumns = "player_id", onDelete = ForeignKey.CASCADE
         )
     }
 )
@@ -30,12 +31,13 @@ public class Score {
 
   private long duration;
 
+  @ColumnInfo(index = true)
   private long value;
 
   @ColumnInfo(name = "rows_removed")
-  private int RowsRemoved;
+  private int rowsRemoved;
 
-  @ColumnInfo(name= "player_id", index = true)
+  @ColumnInfo(name = "player_id", index = true)
   private long playerId;
 
   public long getId() {
@@ -81,11 +83,11 @@ public class Score {
   }
 
   public int getRowsRemoved() {
-    return RowsRemoved;
+    return rowsRemoved;
   }
 
   public void setRowsRemoved(int rowsRemoved) {
-    RowsRemoved = rowsRemoved;
+    this.rowsRemoved = rowsRemoved;
   }
 
   public long getPlayerId() {
@@ -95,4 +97,5 @@ public class Score {
   public void setPlayerId(long playerId) {
     this.playerId = playerId;
   }
+
 }
