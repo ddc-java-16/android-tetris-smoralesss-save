@@ -41,7 +41,6 @@ public class Field {
     addBlock();
   }
 
-
   public boolean rotateLeft() throws GameOverException {
     checkForGameOver();
     boolean rotated = currentBlock.rotate(false);
@@ -50,7 +49,6 @@ public class Field {
     }
     return rotated;
   }
-
 
   public boolean rotateRight() throws GameOverException {
     checkForGameOver();
@@ -79,10 +77,10 @@ public class Field {
     return moved;
   }
 
-  public boolean moveDown() throws GameOverException {
+  public boolean moveDown(boolean freezeOnFailure) throws GameOverException {
     checkForGameOver();
     boolean moved = currentBlock.move(1, 0);
-    if (!moved) {
+    if (!moved && freezeOnFailure) {
       currentBlock.freeze();
       update(currentBlock.getTopRow() + currentBlock.getLastOccupiedRow());
       if (currentBlock.getTopRow() + currentBlock.getLastOccupiedRow() < bufferHeight) {
@@ -237,14 +235,14 @@ public class Field {
     return empty;
   }
 
-  private void checkForGameOver() throws GameOverException {
+  private void computeTiming() {
+    secondsPerTick = Math.pow(TIMING_OFFSET - (level - 1) * TIMING_LEVEL_MULTIPLIER, level - 1);
+  }
+
+  private void checkForGameOver() throws GameOverException{
     if (gameOver) {
       throw new GameOverException();
     }
-  }
-
-  private void computeTiming() {
-    secondsPerTick = Math.pow(TIMING_OFFSET - (level - 1) * TIMING_LEVEL_MULTIPLIER, level - 1);
   }
 
   public static class GameStartedException extends IllegalStateException {
@@ -266,6 +264,7 @@ public class Field {
     public GameStartedException(Throwable cause) {
       super(cause);
     }
+
   }
 
   public static class GameOverException extends IllegalStateException {

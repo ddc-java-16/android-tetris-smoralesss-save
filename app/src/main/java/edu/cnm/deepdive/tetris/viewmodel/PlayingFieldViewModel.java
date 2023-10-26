@@ -7,6 +7,7 @@ import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import dagger.hilt.android.qualifiers.ApplicationContext;
@@ -19,7 +20,6 @@ import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
-import io.reactivex.rxjava3.disposables.Disposable;
 import javax.inject.Inject;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,6 +29,7 @@ public class PlayingFieldViewModel extends ViewModel implements DefaultLifecycle
   private final PlayingFieldRepository playingFieldRepository;
   private final PreferencesRepository preferencesRepository;
   private final MutableLiveData<Boolean> moveSuccess;
+  private final LiveData<Boolean> inProgress;
   private final MutableLiveData<Throwable> throwable;
   private final CompositeDisposable pending;
   private final String playingFieldWidthKey;
@@ -41,6 +42,8 @@ public class PlayingFieldViewModel extends ViewModel implements DefaultLifecycle
     this.playingFieldRepository = playingFieldRepository;
     this.preferencesRepository = preferencesRepository;
     moveSuccess = new MutableLiveData<>();
+    inProgress = Transformations.map(playingFieldRepository.getPlayingField(),
+        (field) -> !field.isGameOver());
     throwable = new MutableLiveData<>();
     pending = new CompositeDisposable();
     Resources resources = context.getResources();
@@ -61,13 +64,17 @@ public class PlayingFieldViewModel extends ViewModel implements DefaultLifecycle
     return moveSuccess;
   }
 
+  public LiveData<Boolean> getInProgress() {
+    return Transformations.distinctUntilChanged(inProgress);
+  }
+
   public LiveData<Throwable> getThrowable() {
     return throwable;
   }
 
   public void create() {
     int width = preferencesRepository.get(playingFieldWidthKey, playingFieldWidthDefault);
-    execute(playingFieldRepository.create(25, width, 5, 5));// FIXME: 10/9/23 Replace with values from preferences.
+    execute(playingFieldRepository.create(25, width, 5, 5)); // FIXME: 10/9/23 Replace with values from preferences.
   }
 
   public void run() {
@@ -76,7 +83,6 @@ public class PlayingFieldViewModel extends ViewModel implements DefaultLifecycle
 
   public void stop() {
     playingFieldRepository.stop();
-    // TODO: 10/23/23 Set whatever is needed to trigger an update in the UI.
   }
 
   public void moveLeft() {
@@ -96,7 +102,7 @@ public class PlayingFieldViewModel extends ViewModel implements DefaultLifecycle
   }
 
   public void drop() {
-   execute(playingFieldRepository.drop());
+    execute(playingFieldRepository.drop(false));
   }
 
   @Override
