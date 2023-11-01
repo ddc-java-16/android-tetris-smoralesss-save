@@ -2,6 +2,9 @@ package edu.cnm.deepdive.tetris.controller;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
@@ -33,10 +36,14 @@ public class GameFragment extends Fragment {
   private int level;
   private int rowsRemoved;
   private User currentUser;
+  private Boolean inProgress;
+  private boolean running;
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    //noinspection deprecation
+    setHasOptionsMenu(true); // FIXME: 10/27/23 Replace with new recommended approach.
   }
 
   @Override
@@ -52,6 +59,38 @@ public class GameFragment extends Fragment {
     setupViewModels();
   }
 
+  /** @noinspection deprecation*/ // FIXME: 10/27/23 Replace with new recommended approach.
+  @Override
+  public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+    super.onCreateOptionsMenu(menu, inflater);
+    inflater.inflate(R.menu.game_options, menu);
+  }
+
+  /** @noinspection deprecation*/ // FIXME: 11/1/23 Replace with new recommended approach.
+  @Override
+  public void onPrepareOptionsMenu(@NonNull Menu menu) {
+    super.onPrepareOptionsMenu(menu);
+    menu.findItem(R.id.play).setVisible(!running);
+    menu.findItem(R.id.pause).setVisible(running);
+  }
+
+  /** @noinspection deprecation*/ // FIXME: 10/27/23 Replace with new recommended approach.
+  @Override
+  public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+    boolean handled = true;
+    int id = item.getItemId();
+    if (id == R.id.play) {
+      playingFieldViewModel.run();
+    } else if (id == R.id.pause) {
+      playingFieldViewModel.stop();
+    } else if (id == R.id.restart) {
+      playingFieldViewModel.create();
+    } else {
+      handled = super.onOptionsItemSelected(item);
+    }
+    return handled;
+  }
+
   private void setupUI(LayoutInflater inflater, ViewGroup container) {
     binding = FragmentGameBinding.inflate(inflater, container, false);
     binding.moveLeft.setOnClickListener((v) -> playingFieldViewModel.moveLeft());
@@ -59,8 +98,6 @@ public class GameFragment extends Fragment {
     binding.rotateLeft.setOnClickListener((v) -> playingFieldViewModel.rotateLeft());
     binding.rotateRight.setOnClickListener((v) -> playingFieldViewModel.rotateRight());
     binding.drop.setOnClickListener((v) -> playingFieldViewModel.drop());
-    binding.run.setOnClickListener((v) -> playingFieldViewModel.run());
-    binding.stop.setOnClickListener((v) -> playingFieldViewModel.stop());
     binding.showScores.setOnClickListener((v) -> Navigation.findNavController(binding.getRoot())
         .navigate(GameFragmentDirections.navigateToScores(score)));
     // TODO: 10/17/23 Initialize any fields.
@@ -91,6 +128,7 @@ public class GameFragment extends Fragment {
   private void setupPlayingFieldViewModel(FragmentActivity activity, LifecycleOwner owner) {
     playingFieldViewModel = new ViewModelProvider(activity)
         .get(PlayingFieldViewModel.class);
+    getLifecycle().addObserver(playingFieldViewModel);
     playingFieldViewModel
         .getPlayingField()
         .observe(owner, this::handlePlayingField);
@@ -100,6 +138,9 @@ public class GameFragment extends Fragment {
     playingFieldViewModel
         .getInProgress()
         .observe(owner, this::handleInProgress);
+    playingFieldViewModel
+        .getRunning()
+        .observe(owner, this::handleRunning);
   }
 
   private void handlePlayingField(Field playingField) {
@@ -120,14 +161,24 @@ public class GameFragment extends Fragment {
   }
 
   private void handleInProgress(Boolean inProgress) {
-    if (Boolean.FALSE.equals(inProgress)) {
+    if (Boolean.FALSE.equals(inProgress) && Boolean.TRUE.equals(this.inProgress)) {
       Score score = new Score();
       score.setStarted(Instant.now()); // FIXME: 10/26/23 This should come from repository.
       score.setValue(this.score);
       score.setRowsRemoved(rowsRemoved);
       scoreViewModel.save(score, currentUser);
     }
+    this.inProgress = inProgress;
   }
 
+  private void handleRunning(Boolean running) {
+    this.running = running;
+    requireActivity().invalidateOptionsMenu();
+    binding.moveLeft.setEnabled(running);
+    binding.moveRight.setEnabled(running);
+    binding.rotateLeft.setEnabled(running);
+    binding.rotateRight.setEnabled(running);
+    binding.drop.setEnabled(running);
+  }
 
 }

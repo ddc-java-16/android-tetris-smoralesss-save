@@ -4,11 +4,15 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import edu.cnm.deepdive.tetris.R;
 import edu.cnm.deepdive.tetris.adapter.UserScoresAdapter.Holder;
 import edu.cnm.deepdive.tetris.databinding.ItemUserScoreBinding;
 import edu.cnm.deepdive.tetris.model.pojo.UserScore;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.List;
 
 public class UserScoresAdapter extends RecyclerView.Adapter<Holder> {
@@ -16,11 +20,20 @@ public class UserScoresAdapter extends RecyclerView.Adapter<Holder> {
   private final Context context;
   private final List<UserScore> scores;
   private final LayoutInflater inflater;
+  private final DateTimeFormatter formatter;
+  @ColorInt
+  private final int oddRowBackground;
+  @ColorInt
+  private final int evenRownBackground;
+
 
   public UserScoresAdapter(Context context, List<UserScore> scores) {
     this.context = context;
     this.scores = scores;
     inflater = LayoutInflater.from(context);
+    formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT, FormatStyle.SHORT);
+    oddRowBackground = context.getColor(R.color.odd_row_background);
+    evenRownBackground = context.getColor(R.color.even_row_background);
   }
 
   @NonNull
@@ -39,7 +52,7 @@ public class UserScoresAdapter extends RecyclerView.Adapter<Holder> {
     return scores.size();
   }
 
-  public static class Holder extends RecyclerView.ViewHolder {
+  public class Holder extends RecyclerView.ViewHolder {
 
     private final ItemUserScoreBinding binding;
 

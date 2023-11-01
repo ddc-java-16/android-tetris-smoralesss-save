@@ -60,6 +60,9 @@ public class PlayingFieldViewModel extends ViewModel implements DefaultLifecycle
     return playingFieldRepository.getDealer();
   }
 
+  public LiveData<Boolean> getRunning() {
+    return Transformations.distinctUntilChanged(playingFieldRepository.getRunning());
+  }
   public LiveData<Boolean> getMoveSuccess() {
     return moveSuccess;
   }

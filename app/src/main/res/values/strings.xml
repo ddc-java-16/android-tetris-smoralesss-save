@@ -51,8 +51,8 @@
   <string name="rotate_left">Rotate left</string>
   <string name="drop">Drop</string>
   <string name="rotate_right">Rotate right</string>
-  <string name="current_level">Current level</string>
-  <string name="current_rows_removed">Current rows removed</string>
+  <string name="current_level">Level</string>
+  <string name="current_rows_removed">Current rows</string>
   <string name="score">Score</string>
   <string name="game_over">Game Over!</string>
   <string name="final_score_format">Score: %,d</string>
@@ -62,5 +62,8 @@
   <string name="score_header">Score</string>
   <string name="rows_removed_header">Rows</string>
   <string name="created_header">Date</string>
+  <string name="run">Run</string>
+  <string name="pause">Pause</string>
+  <string name="new_game">New game</string>
 
 </resources>

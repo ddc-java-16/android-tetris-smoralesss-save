@@ -26,9 +26,8 @@ public class ScoresFragment extends Fragment {
 
   @Override
   public View onCreateView(
-      LayoutInflater inflater, ViewGroup container,  Bundle savedInstanceState) {
+      @NonNull LayoutInflater inflater, ViewGroup container,  Bundle savedInstanceState) {
     binding = FragmentScoresBinding.inflate(inflater, container, false);
-    binding.dummyText.setText(String.valueOf(ScoresFragmentArgs.fromBundle(getArguments()).getScore()));
     // TODO: 10/17/23 Initialize field contents.
     return binding.getRoot();
   }
@@ -38,8 +37,8 @@ public class ScoresFragment extends Fragment {
       @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     // TODO: 10/17/23 Connect to viewModels and add observers.
+    ActionBar actionBar = ((AppCompatActivity) requireActivity()).getSupportActionBar();
     //noinspection DataFlowIssue
-    ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
     actionBar.setDisplayHomeAsUpEnabled(true);
     actionBar.setDisplayShowHomeEnabled(true);
   }
