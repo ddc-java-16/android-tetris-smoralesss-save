@@ -19,22 +19,19 @@
   xmlns:tools="http://schemas.android.com/tools">
 
   <uses-permission android:name="android.permission.INTERNET"/>
-  <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-  <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
   <application
     android:allowBackup="false"
-    android:icon="@mipmap/ic_launcher"
+    android:icon="@mipmap/ic_tetris_launcher"
     android:label="@string/app_name"
-    android:name=".TetrisApplication"
-    android:roundIcon="@mipmap/ic_launcher_round"
+    android:name="edu.cnm.deepdive.tetris.TetrisApplication"
+    android:roundIcon="@mipmap/ic_tetris_launcher_round"
     android:supportsRtl="true"
     android:theme="@style/AppTheme"
     tools:ignore="AllowBackup,DataExtractionRules">
 
     <activity
-      android:name=".controller.LoginActivity"
+      android:name="edu.cnm.deepdive.tetris.controller.LoginActivity"
       android:exported="true">
 
       <intent-filter>
@@ -45,14 +42,14 @@
     </activity>
 
     <activity
-      android:name=".controller.MainActivity"
+      android:name="edu.cnm.deepdive.tetris.controller.MainActivity"
       android:launchMode="singleTop"
       android:screenOrientation="portrait"
       tools:ignore="LockedOrientationActivity"/>
 
     <activity
-      android:name=".controller.SettingsActivity"
-      android:parentActivityName=".controller.MainActivity"
+      android:name="edu.cnm.deepdive.tetris.controller.SettingsActivity"
+      android:parentActivityName="edu.cnm.deepdive.tetris.controller.MainActivity"
       android:label="@string/settings_label"/>
 
   </application>
